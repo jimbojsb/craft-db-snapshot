@@ -1,0 +1,24 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * DB Snapshot plugin for Craft CMS
+ *
+ * DbSnapshotUtility Utility Content
+ *
+ * @author    Josh Butts
+ * @copyright Copyright (c) 2019 Josh Butts
+ * @link      https://github.com/jimbojsb
+ * @package   DbSnapshot
+ * @since     1.0.0
+ */
+#}
+
+<h1>DbSnapshotUtility</h1>
+
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@jimbojsbcraftdbsnapshot/dbsnapshot/assetbundles/dbsnapshotutilityutility/dist', true) ~ '/img/DbSnapshotUtility-icon.svg' %}
+
+<img src="{{ iconUrl }}" height="64" width="64" />
+
+<p>Your Utility content goes here</p>
+
+<p>{{ someVar }}</p>

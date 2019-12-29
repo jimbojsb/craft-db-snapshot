@@ -1,0 +1,44 @@
+{
+    "name": "jimbojsbcraftdbsnapshot/db-snapshot",
+    "description": "Snapshots your database using mysqldump and stores it on an asset volume of your choosing",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "db snapshot"
+    ],
+    "support": {
+        "docs": "https://github.com/jimbojsb/db-snapshot/blob/master/README.md",
+        "issues": "https://github.com/jimbojsb/db-snapshot/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Josh Butts",
+            "homepage": "https://github.com/jimbojsb"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "jimbojsbcraftdbsnapshot\\dbsnapshot\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "DB Snapshot",
+        "handle": "db-snapshot",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/jimbojsb/db-snapshot/master/CHANGELOG.md",
+        "components": {
+            "snapshotcreate": "jimbojsbcraftdbsnapshot\\dbsnapshot\\services\\Snapshotcreate",
+            "snapshotrestore": "jimbojsbcraftdbsnapshot\\dbsnapshot\\services\\Snapshotrestore"
+        },
+        "class": "jimbojsbcraftdbsnapshot\\dbsnapshot\\DbSnapshot"
+    }
+}
