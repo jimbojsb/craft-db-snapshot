@@ -2,13 +2,13 @@
 /**
  * DB Snapshot plugin for Craft CMS 3.x
  *
- * Snapshots your database using mysqldump and stores it on an asset volume of your choosing
+ * Snapshot your database with mysqldump and store it to a an asset volume (S3). Also restore it from that same location. Great for local dev snapshots and nightly backups.
  *
  * @link      https://github.com/jimbojsb
- * @copyright Copyright (c) 2019 Josh Butts
+ * @copyright Copyright (c) 2019 Josh butts
  */
 
-namespace jimbojsbcraftdbsnapshot\dbsnapshot\assetbundles\DbSnapshot;
+namespace jimbojsb\dbsnapshot\assetbundles\DbSnapshot;
 
 use Craft;
 use craft\web\AssetBundle;
@@ -28,7 +28,7 @@ use craft\web\assets\cp\CpAsset;
  *
  * http://www.yiiframework.com/doc-2.0/guide-structure-assets.html
  *
- * @author    Josh Butts
+ * @author    Josh butts
  * @package   DbSnapshot
  * @since     1.0.0
  */
@@ -43,7 +43,7 @@ class DbSnapshotAsset extends AssetBundle
     public function init()
     {
         // define the path that your publishable resources live
-        $this->sourcePath = "@jimbojsbcraftdbsnapshot/dbsnapshot/assetbundles/dbsnapshot/dist";
+        $this->sourcePath = "@jimbojsb/dbsnapshot/assetbundles/dbsnapshot/dist";
 
         // define the dependencies
         $this->depends = [

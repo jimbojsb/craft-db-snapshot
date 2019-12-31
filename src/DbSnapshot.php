@@ -2,18 +2,17 @@
 /**
  * DB Snapshot plugin for Craft CMS 3.x
  *
- * Snapshots your database using mysqldump and stores it on an asset volume of your choosing
+ * Snapshot your database with mysqldump and store it to a an asset volume (S3). Also restore it from that same location. Great for local dev snapshots and nightly backups.
  *
  * @link      https://github.com/jimbojsb
- * @copyright Copyright (c) 2019 Josh Butts
+ * @copyright Copyright (c) 2019 Josh butts
  */
 
-namespace jimbojsbcraftdbsnapshot\dbsnapshot;
+namespace jimbojsb\dbsnapshot;
 
-use jimbojsbcraftdbsnapshot\dbsnapshot\services\Snapshotcreate as SnapshotcreateService;
-use jimbojsbcraftdbsnapshot\dbsnapshot\services\Snapshotrestore as SnapshotrestoreService;
-use jimbojsbcraftdbsnapshot\dbsnapshot\models\Settings;
-use jimbojsbcraftdbsnapshot\dbsnapshot\utilities\DbSnapshotUtility as DbSnapshotUtilityUtility;
+use jimbojsb\dbsnapshot\services\Snapshotcreator as SnapshotcreatorService;
+use jimbojsb\dbsnapshot\services\Snapshotrestorer as SnapshotrestorerService;
+use jimbojsb\dbsnapshot\models\Settings;
 
 use Craft;
 use craft\base\Plugin;
@@ -35,12 +34,10 @@ use yii\base\Event;
  *
  * https://craftcms.com/docs/plugins/introduction
  *
- * @author    Josh Butts
+ * @author    Josh butts
  * @package   DbSnapshot
  * @since     1.0.0
  *
- * @property  SnapshotcreateService $snapshotcreate
- * @property  SnapshotrestoreService $snapshotrestore
  * @property  Settings $settings
  * @method    Settings getSettings()
  */
@@ -88,17 +85,17 @@ class DbSnapshot extends Plugin
 
         // Add in our console commands
         if (Craft::$app instanceof ConsoleApplication) {
-            $this->controllerNamespace = 'jimbojsbcraftdbsnapshot\dbsnapshot\console\controllers';
+            $this->controllerNamespace = 'jimbojsb\dbsnapshot\console\controllers';
         }
 
         // Register our utilities
-        Event::on(
-            Utilities::class,
-            Utilities::EVENT_REGISTER_UTILITY_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                $event->types[] = DbSnapshotUtilityUtility::class;
-            }
-        );
+//        Event::on(
+//            Utilities::class,
+//            Utilities::EVENT_REGISTER_UTILITY_TYPES,
+//            function (RegisterComponentTypesEvent $event) {
+//                $event->types[] = DbsnapshotUtility::class;
+//            }
+//        );
 
         // Do something after we're installed
         Event::on(

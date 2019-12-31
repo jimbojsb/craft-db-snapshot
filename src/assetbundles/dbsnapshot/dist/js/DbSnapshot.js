@@ -3,8 +3,8 @@
  *
  * DB Snapshot JS
  *
- * @author    Josh Butts
- * @copyright Copyright (c) 2019 Josh Butts
+ * @author    Josh butts
+ * @copyright Copyright (c) 2019 Josh butts
  * @link      https://github.com/jimbojsb
  * @package   DbSnapshot
  * @since     1.0.0

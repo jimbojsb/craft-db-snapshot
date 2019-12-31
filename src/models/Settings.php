@@ -2,15 +2,15 @@
 /**
  * DB Snapshot plugin for Craft CMS 3.x
  *
- * Snapshots your database using mysqldump and stores it on an asset volume of your choosing
+ * Snapshot your database with mysqldump and store it to a an asset volume (S3). Also restore it from that same location. Great for local dev snapshots and nightly backups.
  *
  * @link      https://github.com/jimbojsb
- * @copyright Copyright (c) 2019 Josh Butts
+ * @copyright Copyright (c) 2019 Josh butts
  */
 
-namespace jimbojsbcraftdbsnapshot\dbsnapshot\models;
+namespace jimbojsb\dbsnapshot\models;
 
-use jimbojsbcraftdbsnapshot\dbsnapshot\DbSnapshot;
+use jimbojsb\dbsnapshot\DbSnapshot;
 
 use Craft;
 use craft\base\Model;
@@ -25,21 +25,32 @@ use craft\base\Model;
  *
  * https://craftcms.com/docs/plugins/models
  *
- * @author    Josh Butts
+ * @author    Josh butts
  * @package   DbSnapshot
  * @since     1.0.0
  */
 class Settings extends Model
 {
-    // Public Properties
-    // =========================================================================
+    public $path = 'db_snapshots';
+    public $filename;
+    public $compress = true;
+    public $accessKey;
+    public $secretKey;
+    public $endpoint;
+    public $region = 'us-east-1';
+    public $bucket;
 
-    /**
-     * Some field model attribute
-     *
-     * @var string
-     */
-    public $someAttribute = 'Some Default';
+
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+        if (!$this->filename) {
+            $this->filename = Craft::$app->config->db->database . ".sql";
+        }
+    }
+
+
+
 
     // Public Methods
     // =========================================================================
@@ -57,8 +68,6 @@ class Settings extends Model
     public function rules()
     {
         return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
         ];
     }
 }

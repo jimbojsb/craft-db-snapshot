@@ -5,8 +5,8 @@
  *
  * DB Snapshot Settings.twig
  *
- * @author    Josh Butts
- * @copyright Copyright (c) 2019 Josh Butts
+ * @author    Josh butts
+ * @copyright Copyright (c) 2019 Josh butts
  * @link      https://github.com/jimbojsb
  * @package   DbSnapshot
  * @since     1.0.0
@@ -15,12 +15,69 @@
 
 {% import "_includes/forms" as forms %}
 
-{% do view.registerAssetBundle("jimbojsbcraftdbsnapshot\\dbsnapshot\\assetbundles\\dbsnapshot\\DbSnapshotAsset") %}
+{% do view.registerAssetBundle("jimbojsb\\dbsnapshot\\assetbundles\\dbsnapshot\\DbSnapshotAsset") %}
+
 
 {{ forms.textField({
-    label: 'Some Field',
-    instructions: 'Enter some setting here.',
-    id: 'someAttribute',
-    name: 'someAttribute',
-    value: settings['someAttribute']})
+    label: 'Access Key',
+    instructions: '',
+    id: 'accessKey',
+    name: 'accessKey',
+    value: settings['accessKey']})
+}}
+
+{{ forms.textField({
+    label: 'Secret Key',
+    instructions: '',
+    id: 'secretKey',
+    name: 'secretKey',
+    value: settings['secretKey']})
+}}
+
+{{ forms.textField({
+    label: 'Endpoint',
+    instructions: 'Leave empty unless using a non-AWS S3-compatible service',
+    id: 'endpoint',
+    name: 'endpoint',
+    value: settings['endpoint']})
+}}
+{{ forms.textField({
+    label: 'Region',
+    instructions: '',
+    id: 'region',
+    name: 'region',
+    value: settings['region']})
+}}
+
+{{ forms.textField({
+    label: 'Bucket Name',
+    instructions: '',
+    id: 'bucket',
+    name: 'bucket',
+    value: settings['bucket']})
+}}
+
+{{ forms.textField({
+    label: 'Subfolder path to store snapshot in',
+    instructions: '',
+    id: 'path',
+    name: 'path',
+    value: settings['path']})
+}}
+
+
+{{ forms.textField({
+    label: 'Snapshot filename',
+    instructions: 'Only the filename, not inclusive of any path information',
+    id: 'filename',
+    name: 'filename',
+    value: settings['filename']})
+}}
+
+{{ forms.lightSwitchField({
+    label: 'Compress backups?',
+    instructions: 'Compress backup with gzip. (assumes /bin/gzip exists) ',
+    id: 'compress',
+    name: 'compress',
+    on: settings['compress'] == true})
 }}
