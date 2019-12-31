@@ -1,12 +1,10 @@
 # DB Snapshot plugin for Craft CMS 3.x
 
-Snapshot your database with mysqldump and store it to a an asset volume (S3). Also restore it from that same location. Great for local dev snapshots and nightly backups.
-
-![Screenshot](resources/img/plugin-logo.png)
+Store Craft CMS database backups in an S3 (or compatible) bucket. Also supports loading those backups for local development, etc. 
 
 ## Requirements
 
-This plugin requires Craft CMS 3.0.0-beta.23 or later.
+This plugin requires Craft CMS 3.x and an S3-compatible storage account.
 
 ## Installation
 
@@ -22,22 +20,18 @@ To install the plugin, follow these instructions.
 
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for DB Snapshot.
 
-## DB Snapshot Overview
-
--Insert text here-
-
 ## Configuring DB Snapshot
 
--Insert text here-
+Configuration is supported in the Craft admin panel
 
 ## Using DB Snapshot
 
--Insert text here-
+```bash
+./craft db-snapshot/snapshot/create
+```
 
-## DB Snapshot Roadmap
-
-Some things to do, and ideas for potential features:
-
-* Release it
+```bash
+./craft db-snapshot/snapshot/load
+```
 
 Brought to you by [Josh butts](https://github.com/jimbojsb)
