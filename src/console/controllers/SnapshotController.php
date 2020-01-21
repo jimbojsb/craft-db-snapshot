@@ -41,12 +41,14 @@ class SnapshotController extends Controller
     {
         $this->stdout('Creating snapshot ... ');
         $db = Craft::$app->getDb();
+        $view = Craft::$app->getView();
         $settings = DbSnapshot::getInstance()->settings;
 
         $tmpPath = $this->createTempFolder();
 
-        $tmpFile = "$tmpPath/$settings->filename";
-        $volumeFile = $settings->filename;
+        $filename = $view->renderString($settings->filename);
+        $tmpFile = "$tmpPath/$filename";
+        $volumeFile = $filename;
 
         try {
             $db->backupTo($tmpFile);
@@ -76,12 +78,14 @@ class SnapshotController extends Controller
     {
         $this->stdout('Loading snapshot ... ');
         $db = Craft::$app->getDb();
+        $view = Craft::$app->getView();
         $settings = DbSnapshot::getInstance()->settings;
 
         $tmpPath = $this->createTempFolder();
 
-        $tmpFile = "$tmpPath/$settings->filename";
-        $volumeFile = $settings->filename;
+        $filename = $view->renderString($settings->filename);
+        $tmpFile = "$tmpPath/$filename";
+        $volumeFile = $filename;
 
         try {
             $filesystem = $this->getFilesystem();

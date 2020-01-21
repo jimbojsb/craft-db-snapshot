@@ -22,7 +22,9 @@ To install the plugin, follow these instructions.
 
 ## Configuring DB Snapshot
 
-Configuration is supported in the Craft admin panel
+Configuration is supported in the Craft admin panel.
+
+Snapshot filename can contain Twig expressions: `db_snapshot_{{now|date("Ymd-His")}}.sql`
 
 ## Using DB Snapshot
 
