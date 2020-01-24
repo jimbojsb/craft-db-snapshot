@@ -31,8 +31,29 @@ use yii\helpers\Console;
  */
 class SnapshotController extends Controller
 {
+    // Public Properties
+    // =========================================================================
+
+    /**
+     * @var null|string
+     */
+    public $filename;
+
+
     // Public Methods
     // =========================================================================
+
+    /**
+     * @param string $actionID
+     *
+     * @return array|string[]
+     */
+    public function options($actionID): array
+    {
+        return [
+            'filename',
+        ];
+    }
 
     /**
      * create a new snapshot
@@ -72,7 +93,7 @@ class SnapshotController extends Controller
     }
 
     /**
-     * load an existing snapshot
+     * load an existing snapshot. You can pass in a --filename
      */
     public function actionLoad()
     {
@@ -83,7 +104,10 @@ class SnapshotController extends Controller
 
         $tmpPath = $this->createTempFolder();
 
-        $filename = $view->renderString($settings->filename);
+        if (!$filename = $this->filename) {
+            $filename = $view->renderString($settings->filename);
+        }
+
         $tmpFile = "$tmpPath/$filename";
         $volumeFile = $filename;
 
