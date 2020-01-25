@@ -31,8 +31,29 @@ use yii\helpers\Console;
  */
 class SnapshotController extends Controller
 {
+    // Public Properties
+    // =========================================================================
+
+    /**
+     * @var null|string
+     */
+    public $filename;
+
+
     // Public Methods
     // =========================================================================
+
+    /**
+     * @param string $actionID
+     *
+     * @return array|string[]
+     */
+    public function options($actionID): array
+    {
+        return [
+            'filename',
+        ];
+    }
 
     /**
      * create a new snapshot
@@ -41,12 +62,14 @@ class SnapshotController extends Controller
     {
         $this->stdout('Creating snapshot ... ');
         $db = Craft::$app->getDb();
+        $view = Craft::$app->getView();
         $settings = DbSnapshot::getInstance()->settings;
 
         $tmpPath = $this->createTempFolder();
 
-        $tmpFile = "$tmpPath/$settings->filename";
-        $volumeFile = $settings->filename;
+        $filename = $view->renderString($settings->filename);
+        $tmpFile = "$tmpPath/$filename";
+        $volumeFile = $filename;
 
         try {
             $db->backupTo($tmpFile);
@@ -70,18 +93,23 @@ class SnapshotController extends Controller
     }
 
     /**
-     * load an existing snapshot
+     * load an existing snapshot. You can pass in a --filename
      */
     public function actionLoad()
     {
         $this->stdout('Loading snapshot ... ');
         $db = Craft::$app->getDb();
+        $view = Craft::$app->getView();
         $settings = DbSnapshot::getInstance()->settings;
 
         $tmpPath = $this->createTempFolder();
 
-        $tmpFile = "$tmpPath/$settings->filename";
-        $volumeFile = $settings->filename;
+        if (!$filename = $this->filename) {
+            $filename = $view->renderString($settings->filename);
+        }
+
+        $tmpFile = "$tmpPath/$filename";
+        $volumeFile = $filename;
 
         try {
             $filesystem = $this->getFilesystem();
