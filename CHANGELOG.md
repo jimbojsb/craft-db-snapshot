@@ -7,3 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 1.0.0 - 2019-12-30
 ### Added
 - Initial release
+
+## 1.0.0 - 2020-01-24
+### Added
+- Ability to use twig strings in the filename config and load arbitrary filenames
