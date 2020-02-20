@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DB Snapshot plugin for Craft CMS 3.x
  *
@@ -11,6 +12,9 @@
 namespace jimbojsb\dbsnapshot\console\controllers;
 
 use Aws\S3\S3Client;
+use Aws\Credentials\Credentials;
+use Aws\Handler\GuzzleV6\GuzzleHandler;
+use Aws\Sts\StsClient;
 use craft\base\VolumeInterface;
 use craft\helpers\FileHelper;
 use jimbojsb\dbsnapshot\DbSnapshot;
@@ -38,6 +42,16 @@ class SnapshotController extends Controller
      * @var null|string
      */
     public $filename;
+
+    /**
+     * Cache key to use for caching purposes
+     */
+    const CACHE_KEY_PREFIX = 'aws.';
+
+    /**
+     * Cache duration for access token
+     */
+    const CACHE_DURATION_SECONDS = 3600;
 
 
     // Public Methods
@@ -131,7 +145,6 @@ class SnapshotController extends Controller
                 $tmpFile = str_replace(".gz", "", $tmpFile);
             }
             $db->restore($tmpFile);
-
         } catch (\Throwable $e) {
             Craft::$app->getErrorHandler()->logException($e);
             $this->stderr('error: ' . $e->getMessage() . PHP_EOL, \craft\helpers\Console::FG_RED);
@@ -153,24 +166,116 @@ class SnapshotController extends Controller
     }
 
     /**
+     * Build the config array based on a keyID and secret
+     *
+     * @param string|null $keyId The key ID
+     * @param string|null $secret The key secret
+     * @param string|null $region The region to user
+     * @param bool $refreshToken If true will always refresh token
+     * @return array
+     */
+    public static function buildConfigArray($keyId = null, $secret = null, $region = null, $refreshToken = false): array
+    {
+        $config = [
+            'region' => $region,
+            'version' => 'latest'
+        ];
+
+        $client = Craft::createGuzzleClient();
+        $config['http_handler'] = new GuzzleHandler($client);
+
+        if (empty($keyId) || empty($secret)) {
+            // Assume we're running on EC2 and we have an IAM role assigned. Kick back and relax.
+        } else {
+            $tokenKey = static::CACHE_KEY_PREFIX . md5($keyId . $secret);
+            $credentials = new Credentials($keyId, $secret);
+
+            if (Craft::$app->cache->exists($tokenKey) && !$refreshToken) {
+                $cached = Craft::$app->cache->get($tokenKey);
+                $credentials->unserialize($cached);
+            } else {
+                $config['credentials'] = $credentials;
+                $stsClient = new StsClient($config);
+                $result = $stsClient->getSessionToken(['DurationSeconds' => static::CACHE_DURATION_SECONDS]);
+                $credentials = $stsClient->createCredentials($result);
+                $cacheDuration = $credentials->getExpiration() - time();
+                $cacheDuration = $cacheDuration > 0 ?: static::CACHE_DURATION_SECONDS;
+                Craft::$app->cache->set($tokenKey, $credentials->serialize(), $cacheDuration);
+            }
+
+            // TODO Add support for different credential supply methods
+            $config['credentials'] = $credentials;
+        }
+
+        return $config;
+    }
+
+    /**
+     * Get the Amazon S3 client.
+     *
+     * @param array $config client config
+     * @param array $credentials credentials to use when generating a new token
+     * @return S3Client
+     */
+    protected static function client(array $config = [], array $credentials = []): S3Client
+    {
+        if (!empty($config['credentials']) && $config['credentials'] instanceof Credentials) {
+            $config['generateNewConfig'] = function () use ($credentials) {
+                $args = [
+                    $credentials['keyId'],
+                    $credentials['secret'],
+                    $credentials['region'],
+                    true
+                ];
+                return call_user_func_array(self::class . '::buildConfigArray', $args);
+            };
+        }
+
+        return new S3Client($config);
+    }
+
+    /**
+     * Return the credentials as an array
+     *
+     * @return array
+     */
+    private function _getCredentials()
+    {
+        $settings = DbSnapshot::getInstance()->settings;
+        return [
+            'keyId' => $settings->getAccessKey(),
+            'secret' => $settings->getSecretKey(),
+            'region' => $settings->getRegion(),
+        ];
+    }
+
+    /**
+     * Get the config array for AWS Clients.
+     *
+     * @return array
+     */
+    private function _getConfigArray()
+    {
+        $credentials = $this->_getCredentials();
+
+        return self::buildConfigArray($credentials['keyId'], $credentials['secret'], $credentials['region']);
+    }
+
+    /**
      * @param \jimbojsb\dbsnapshot\models\Settings $settings
      * @return Filesystem
      */
     private function getFilesystem()
     {
         $settings = DbSnapshot::getInstance()->settings;
-        $s3Options = [
-            'credentials' => [
-                'key' => $settings->getAccessKey(),
-                'secret' => $settings->getSecretKey()
-            ],
-            'region' => $settings->getRegion(),
-            'version' => 'latest'
-        ];
+
+        $config = $this->_getConfigArray();
+
         if ($settings->getEndpoint()) {
-            $s3Options['endpoint'] = $settings->getEndpoint();
+            $config['endpoint'] = $settings->getEndpoint();
         }
-        $s3Client = new S3Client($s3Options);
+
+        $s3Client = static::client($config, $this->_getCredentials());
         $s3Adapter = new AwsS3Adapter($s3Client, $settings->getBucket(), $settings->getPath());
         $filesystem = new Filesystem($s3Adapter);
         return $filesystem;
