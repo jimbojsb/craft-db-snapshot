@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - Initial release
 
-## 1.1.0 - 2020-01-24
+## 1.1.1 - 2020-01-24
 ### Added
 - Ability to use twig strings in the filename config and load arbitrary filenames
+
+## 1.2 - 2020-02-19
+### Added
+- Ability to reference environment variables in the settings pane

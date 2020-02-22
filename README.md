@@ -26,6 +26,8 @@ Configuration is supported in the Craft admin panel.
 
 Snapshot filename can contain Twig expressions: `db_snapshot_{{now|date("Ymd-His")}}.sql`
 
+All fields support Craft environment variable references (For example, setting Access Key to `$ACCESS_KEY`)
+
 Be aware that if you use a timestamp in the filename, you will need to provide a filename when using the load action.
 
 ## Using DB Snapshot

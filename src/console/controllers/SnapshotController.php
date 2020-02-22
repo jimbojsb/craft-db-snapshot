@@ -67,13 +67,13 @@ class SnapshotController extends Controller
 
         $tmpPath = $this->createTempFolder();
 
-        $filename = $view->renderString($settings->filename);
+        $filename = $view->renderString($settings->getFilename());
         $tmpFile = "$tmpPath/$filename";
         $volumeFile = $filename;
 
         try {
             $db->backupTo($tmpFile);
-            if ($settings->compress) {
+            if ($settings->getCompress()) {
                 $compressCmd = "/bin/gzip $tmpFile";
                 shell_exec($compressCmd);
                 $tmpFile = "$tmpFile.gz";
@@ -105,7 +105,7 @@ class SnapshotController extends Controller
         $tmpPath = $this->createTempFolder();
 
         if (!$filename = $this->filename) {
-            $filename = $view->renderString($settings->filename);
+            $filename = $view->renderString($settings->getFilename());
         }
 
         $tmpFile = "$tmpPath/$filename";
@@ -114,7 +114,7 @@ class SnapshotController extends Controller
         try {
             $filesystem = $this->getFilesystem();
 
-            if ($settings->compress) {
+            if ($settings->getCompress()) {
                 $volumeFile = "$volumeFile.gz";
                 $tmpFile = "$tmpFile.gz";
             }
@@ -125,7 +125,7 @@ class SnapshotController extends Controller
                 throw new \RuntimeException("Snapshot $volumeFile does not exist");
             }
 
-            if ($settings->compress) {
+            if ($settings->getCompress()) {
                 $compressCmd = "/bin/gunzip $tmpFile";
                 shell_exec($compressCmd);
                 $tmpFile = str_replace(".gz", "", $tmpFile);
@@ -161,17 +161,17 @@ class SnapshotController extends Controller
         $settings = DbSnapshot::getInstance()->settings;
         $s3Options = [
             'credentials' => [
-                'key' => $settings->accessKey,
-                'secret' => $settings->secretKey
+                'key' => $settings->getAccessKey(),
+                'secret' => $settings->getSecretKey()
             ],
-            'region' => $settings->region,
+            'region' => $settings->getRegion(),
             'version' => 'latest'
         ];
-        if ($settings->endpoint) {
-            $s3Options['endpoint'] = $settings->endpoint;
+        if ($settings->getEndpoint()) {
+            $s3Options['endpoint'] = $settings->getEndpoint();
         }
         $s3Client = new S3Client($s3Options);
-        $s3Adapter = new AwsS3Adapter($s3Client, $settings->bucket, $settings->path);
+        $s3Adapter = new AwsS3Adapter($s3Client, $settings->getBucket(), $settings->getPath());
         $filesystem = new Filesystem($s3Adapter);
         return $filesystem;
     }
