@@ -15,3 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 1.2.0 - 2020-02-19
 ### Added
 - Ability to reference environment variables in the settings pane
+
+## 1.3 - 2020-04-21
+### Added
+- Ability to list stored snapshots from the S3 bucket

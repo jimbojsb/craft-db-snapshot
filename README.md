@@ -33,15 +33,23 @@ Be aware that if you use a timestamp in the filename, you will need to provide a
 ## Using DB Snapshot
 
 ```bash
+# create a new snapshot
 ./craft db-snapshot/snapshot/create
 ```
 
 ```bash
+# load an existing snapshot
 ./craft db-snapshot/snapshot/load
 ```
 
 ```bash
+# load an existing snapshot (specific filename if using variables)
 ./craft db-snapshot/snapshot/load --filename=db_snapshot_2020-02-29-123456.sql
+```
+
+```bash
+# list available snapshots
+./craft db-snapshot/snapshot/list
 ```
 
 Brought to you by [Josh butts](https://github.com/jimbojsb)
