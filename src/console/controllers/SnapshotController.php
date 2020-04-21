@@ -93,6 +93,20 @@ class SnapshotController extends Controller
     }
 
     /**
+     * List snapshots saved in your bucket.
+     */
+    public function actionList()
+    {
+        $this->stdout("Listing snapshots ...");
+        $filesystem = $this->getFilesystem()->listContents();
+        $files = $this->getFilesystem()->listContents();
+        foreach($files as $file){
+            $this->stdout($file['basename'] . "\t" . date('r',$file['timestamp']) . "\n");
+        }
+        return ExitCode::OK;
+    }
+
+    /**
      * load an existing snapshot. You can pass in a --filename
      */
     public function actionLoad()
