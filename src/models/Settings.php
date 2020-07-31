@@ -31,13 +31,6 @@ use craft\base\Model;
  */
 class Settings extends Model
 {
-    /**
-     * @return mixed
-     */
-    public function getBucket()
-    {
-        return $this->bucket;
-    }
     public $path = 'db_snapshots';
     public $filename;
     public $compress = true;
@@ -111,8 +104,14 @@ class Settings extends Model
     {
         return Craft::parseEnv($this->region);
     }
-
-
+    
+    /**
+     * @return mixed
+     */
+    public function getBucket()
+    {
+        return Craft::parseEnv($this->bucket);
+    }
 
     // Public Methods
     // =========================================================================
